@@ -11,15 +11,18 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-We're going to be exploring some of the topics that you've covered in genetics and epigenetics the last couple of days. As such this workshop consists of two parts:
+We're going to be exploring some of the topics that you've covered in genetics and epigenetics over the last couple of days. As such this workshop consists of two parts:
 
-  - Population Genetics - how do we explore genetic variation between population? what does this look like? 
-  - Epigenetics - can we use epigenetics in a similar way as genetic variation to distinguish cells/tissues?
+  - **Population Genetics** - how do we explore genetic variation between populations? what does this look like? 
+  - **Epigenetics** - can we use epigenetics in a similar way as genetic variation to distinguish cells/tissues?
+
+-------
 
 ## 1. Population Genetics
 
 SNP - Single Nucleotide Polymorphisms
 
+-------
 
 ## 2. Epigenetics
 
