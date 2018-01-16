@@ -13,5 +13,8 @@ There are two aspects of what you've learnt so far that we will explore with som
 
 ## 2. Epigenetics
 
-GitHub repository: https://github.com/sirselim/methylation_EWAS_workshop
-Full workshop: https://sirselim.github.io/methylation_EWAS_workshop/
+***Note:*** *This section borrows from previous epigenetic workshops, see below for the full resources:*
+
+  - GitHub repository: https://github.com/sirselim/methylation_EWAS_workshop  
+  - Full workshop: https://sirselim.github.io/methylation_EWAS_workshop/
+  
