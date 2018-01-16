@@ -22,12 +22,78 @@ We're going to be exploring some of the topics that you've covered in genetics a
 
 SNP - Single Nucleotide Polymorphisms
 
+## Overview
+
+The objective of this module is to give you some familiarity with the types of data and tools that are commonly used for genetic studies of population diversity.
+
+The data we will be using are publicly available high-throughput sequencing 
+data from the 1000 Genomes Project.  The main web page for the 1000 Genomes Project is:
+
+http://1000genomes.org
+
+The following page provides background information about the 1000 Genomes Project (and is worth reading, particularly the information about the populations being used in the study):
+
+http://www.1000genomes.org/about
+
+We will be using the R and RStudio software applications to analyze the data. 
+
+R: https://cran.rstudio.com/
+RStudio: https://www.rstudio.com/product/rstudio/download/
+
+### Getting started - loading the data
+
+The first data set we will look at contains genetic data on just a few loci (specific points in the genome) across the various populations being studied.  Looking at this small data set will give you a feel for what we mean by "genotype data" for a particular locus.
+
+Open RStudio and read in the first data set using the following command:
+
+```{r}
+## Read in the SNP data
+snpData = read.table('data/GENE360snpData.txt',sep='\t',header=T)
+```
+
+## Looking at SNP frequencies
+
+The other nine columns in the data set relate to specific single nucleotide polymorphisms (SNPs) in the genome - we have the genotype data for each SNP for every individual in the data set.
+
+We can use the "table" command again to summarize the genotype information for each SNP:
+
+```{r}
+## Make a genotype frequency table for the first SNP
+table(snpData$rs3826656)
+```
+
+We can also calculate the proportions associated with each genotype:
+
+```{r}
+## Calculate proportions
+prop.table(table(snpData$rs3826656))
+```
+
+and examine differences in genotype frequencies across populations:
+
+```{r}
+## Create contingeny table - genotypes across populations
+table(snpData$Population, snpData$rs3826656)
+
+## And calculate proportions (rounded)
+round(prop.table(table(snpData$Population, snpData$rs3826656),1),2)
+```
+
+These results can be plotted as a bar plot:
+
+```{r}
+snpFreqs = t(prop.table(table(snpData$Population, snpData$rs3826656), 1))
+barplot(snpFreqs, beside=TRUE, legend.text=TRUE, ylim=c(0,1))
+```
+
+These analyses can be repeated for different SNPs by changing the SNP ID (e.g., rs3826656) in the above commands.
 -------
 
 ## 2. Epigenetics
 
 
 ```{r}
+## Read in the methylation data for 10 different cell populations
 blood_data <- read.csv('data/publicbeta_data.csv', head = T, row.names = 1, as.is = F)
 ```
 
