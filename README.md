@@ -18,3 +18,5 @@ There are two aspects of what you've learnt so far that we will explore with som
   - GitHub repository: https://github.com/sirselim/methylation_EWAS_workshop  
   - Full workshop: https://sirselim.github.io/methylation_EWAS_workshop/
   
+
+The online version of this workshop can be viewed here: https://rawgit.com/sirselim/SING_Aotearoa_2018/master/SING_workshop.html
