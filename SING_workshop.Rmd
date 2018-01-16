@@ -3,28 +3,28 @@ title: "SING Aotearoa Bioinformatics Workshop 2018"
 author: "Miles Benton"
 date: "17 January 2018"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+We're going to be exploring some of the topics that you've covered in genetics and epigenetics the last couple of days. As such this workshop consists of two parts:
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+  - Population Genetics - how do we explore genetic variation between population? what does this look like? 
+  - Epigenetics - can we use epigenetics in a similar way as genetic variation to distinguish cells/tissues?
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## 1. Population Genetics
 
-```{r cars}
-summary(cars)
+SNP - Single Nucleotide Polymorphisms
+
+
+## 2. Epigenetics
+
+
+```{r}
+blood_data <- read.csv('data/publicbeta_data.csv', head = T, row.names = 1, as.is = F)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
