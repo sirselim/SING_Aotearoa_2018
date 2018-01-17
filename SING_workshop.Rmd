@@ -233,3 +233,21 @@ The way in which the "leaves" of the tree cluster, reflects the similarity betwe
 blood_data <- read.csv('data/publicbeta_data.csv', head = T, row.names = 1, as.is = F)
 ```
 
+
+  - Brief intro about CpGs and DNA methylation. One epigenetic mechanism for which there is a lot of data available is DNA methylation. You can think of this as an underline that occurs under two specific letters, in DNA language this is CG, but you could think of it as words with a “GN” next to each other e.g magnetic, gnat, gnome, significant. Remind them about context – different tissues etc.
+
+  - Is it worth creating a bar chart similar to the genotype one for a given CpG so they get a feel for it (100% methylated, 50% or 0%) in a given cell? We can rig it obviously.
+
+  - Tree of tissues all CpGs
+
+  - Tree of tissues with tissue biomarker CpGs
+
+  - Perhaps here introduce the idea of blood cell types. So epigenetics – identify a “new”, previously unrecognised cell type or inflammatory response related to disease?
+
+  - Sex?
+
+  - If time and can find an appropriate dataset show an analysis of environmental exposure, and/or strong disease phenotype
+
+  - Could we have an example/test run where say we set them a case study – Miles idea forensics – can they talk us through identifying a cell type at a crime scene
+
+  - Think of potential discussion points throughout.
