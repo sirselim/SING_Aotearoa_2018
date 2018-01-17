@@ -11,6 +11,11 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+require(FactoMineR)
+```
+
+
 We're going to be exploring some of the topics that you've covered in genetics and epigenetics over the last couple of days. As such this workshop consists of two parts:
 
   - **Population Genetics** - how do we explore genetic variation between populations? what does this look like? 
@@ -87,6 +92,135 @@ barplot(snpFreqs, beside=TRUE, legend.text=TRUE, ylim=c(0,1))
 ```
 
 These analyses can be repeated for different SNPs by changing the SNP ID (e.g., rs3826656) in the above commands.
+
+## Population diversity
+
+The second data set that we will look at can be used to investigate population (genetic) diversity.  These SNPs were chosen because they are "ancestry informative" - variation in their genotype frequencies tends to be associated with differences between population groups.
+
+```{r, cache=TRUE}
+## Load ancestry data
+snpAns = read.table('data/GENE360snpAncestry.txt', header=T, sep='\t')
+## Check dimensionality of data
+dim(snpAns)
+```
+
+Now we have a lot more data: 2504 individuals, and 2302 SNP genotypes for each.  Note that there are 2305 columns in the data set, but the first three relate to non-SNP data.  
+
+To examine population diversity, we need to do two things:
+
+1. create a data object of ONLY the SNP genotype data (i.e., remove the first three columns).
+2. convert the genotypes to allele counts (e.g., TT, AT, AA to 0, 1, 2 - count the number of A's).
+
+Step 1:
+```{r}
+## Create object containing only the SNP data - remove the first three columns
+snpAnsDat = snpAns[,-c(1,2,3)]
+```
+
+Step 2:
+```{r, cache=TRUE}
+## Load a custom function to convert to allele counts
+source('alleleCounts.R')
+
+## Apply the function to the genotype data, one column (SNP) at a time
+## This will take 30 seconds or so...
+snpAnsCount = apply(snpAnsDat, 2, alleleCounts)
+```
+
+Now we have a data set of just the SNP data, with genotypes converted to allele counts.
+
+So, what are we going to do with this new data set?
+
+### Dimension reduction (principal components analysis)
+
+In terms of examining population diversity, we have 2302 dimensions of data available - one dimension for each SNP.
+
+Rather than trying to comprehend this huge amount of data in 2302-dimensional space, genetics researchers often use a statistical tool called Principal Components Analysis (PCA) to reduce the dimensionality of the data.
+
+The idea is to find the most important variation in the data, and examine the samples in terms of that variation, ignoring the rest.   In practice, this works fairly well, because genetic differences between populations provide a strong (and relatively consistent) source of variation across genomic loci (i.e., SNPs).  Rather than looking at 2302 dimensions of data, we end up looking at variation across just 2 or 3 dimensions - each dimension is defined by a combination of SNPs which vary in a similar way across the individuals in the study.
+
+We can plot the principal components and colour the points based on the population each sample belongs to.
+
+```{r, message=FALSE, results='hide'}
+# use flashpcaR package for fast PCA analysis
+library(flashpcaR)
+# load scales for transparent points
+library(scales)
+# perform PCA
+r <- flashpca(snpAnsCount, do_loadings=TRUE, verbose=TRUE, stand="binom", ndim=3)
+```
+
+### PCA plots
+
+```{r, echo=FALSE}
+plot(r$vectors[,1], r$vectors[,2], col = alpha(as.numeric(snpAns$Population), 0.5), pch = 16, 
+     main = "PCA of SNP data showing dim 1 vs dim 2")
+legend('bottomleft', legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16)
+```
+
+```{r, echo=FALSE}
+plot(r$vectors[,1], r$vectors[,3], col = alpha(as.numeric(snpAns$Population), 0.5), pch = 16, 
+     main = "PCA of SNP data showing dim 1 vs dim 3")
+legend('topleft', legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16)
+```
+
+```{r, echo=FALSE}
+plot(r$vectors[,2], r$vectors[,3], col = alpha(as.numeric(snpAns$Population), 0.5), pch = 16, 
+     main = "PCA of SNP data showing dim 2 vs dim 3")
+legend('topleft', legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16)
+```
+
+From the plots we can see that samples from the same population tend to cluster together, and that the first three principal components do a reasonable job of capturing the genetic diversity between the populations.
+
+With the `scatterplot3d` package, you can plot the first three principal components at once (i.e., combining the information from the three
+scatterplots above).  This shows that the European (EUR), East Asian (EAS) and South Asian (SAS) super-populations are relatively homogeneous, while the Ad-Mixed American (AMR) and African (AFR) super-populations exhibit greater variation, suggesting admixture within these groups.
+
+```{r}
+library(scatterplot3d)
+scatterplot3d(r$vectors[,1], r$vectors[,2], r$vectors[,3], color=as.numeric(snpAns$Population), pch=16,
+              cex.symbols=0.5, xlab="PC1", ylab="PC2", zlab="PC3")
+legend(-3.5, 2.5, legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16, bty = 'n')
+```
+
+
+### Interactive 3D plot
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=4, fig.width=7}
+library(plotly)
+
+p <- plot_ly(x = r$vectors[,1], y = r$vectors[,2], z = r$vectors[,3]) %>%
+  add_markers(sizes=c(10,100), opacity = 0.5, color = snpAns$Population, size = r$vectors[,1]) %>%
+  layout(scene = list(xaxis = list(title = 'PC1'),
+                      yaxis = list(title = 'PC2'),
+                      zaxis = list(title = 'PC3')))
+
+p
+```
+
+## Phylogenetic trees
+
+Another way to visualise genetic similarity is via "phylogenetic trees", also known more generally as "dendrograms".
+
+These tree diagrams group items together based on similarity scores.  In this setting our "items" are the populations, and the scores are calculated based on the genetic similarities between each pair of populations.
+
+To calculate similarities, we need to create a set of "average" genotypes for each population.  One way to do this is to calculate the frequency of the major homozygote for each SNP in each population.
+
+```{r, cache=TRUE}
+## Load custom function for calculating major homozygote frequency:
+source('calcMajorFreq.R')
+
+## Apply this function to the SNP count data
+## Takes a few seconds
+popFreqs = calcMajorFreq(snpAnsCount, snpAns$Population)
+```
+
+```{r}
+# Make a cluster tree based on these frequencies
+plot(hclust(dist(popFreqs)),hang=-1)
+```
+
+The way in which the "leaves" of the tree cluster, reflects the similarity between the items analysed.  In this case the populations are grouped based on their genetic similarity, as measured by these particular loci.  Here it appears that the AMR (Ad-Mixed American), and SAS (South Asian) super-populations are most genetically similar, then EUR (European), followed by EAS (East Asian).  The AFR (African) super-population is the most genetically dissimilar relative to the others.  It is likely that these groupings reflect (to some degree) migration patterns and shared ancestry experienced by these populations.
+
 
 
 -------
