@@ -373,7 +373,7 @@ plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(3,4))
 
 Nice 3D view:
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 
 p <- plot_ly(blood_data2, x = cell_pca$ind$coord[,1], y = cell_pca$ind$coord[,2], z = cell_pca$ind$coord[,3]) %>%
   add_markers(sizes=c(10,100), opacity = 0.5, color = ~cells) %>%
