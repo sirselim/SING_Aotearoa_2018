@@ -21,7 +21,7 @@ We're going to be exploring some of the topics that you've covered in genetics a
   - **Population Genetics** - how do we explore genetic variation between populations? what does this look like? 
   - **Epigenetics** - can we use epigenetics in a similar way as genetic variation to distinguish cells/tissues?
 
--------
+-----------
 
 ## 1. Population Genetics
 
@@ -223,28 +223,168 @@ The way in which the "leaves" of the tree cluster, reflects the similarity betwe
 
 
 
--------
+-----------
 
-## 2. Epigenetics
+## 2. Epigenetics - CpGs and DNA methylation
 
+One epigenetic mechanism for which there is a lot of data available is DNA methylation. You can think of this as an underline that occurs under two specific letters, in DNA language this is **CG**, but you could think of it as words with a “**GN**” next to each other e.g ma<u>**gn**</u>etic, <u>**gn**</u>at, <u>**gn**</u>ome, si<u>**gn**</u>ificant. Remind them about context – different tissues etc.
+
+  - Is it worth creating a bar chart similar to the genotype one for a given CpG so they get a feel for it (100% methylated, 50% or 0%) in a given cell? We can rig it obviously.
+
+
+```{r, fig.width=10}
+# create some tissue methylation data
+tissue_data <- data.frame(CG_1 = c(100, 50, 0), CG_2 = c(50, 50, 100), CG_3 = c(0, 100, 50))
+rownames(tissue_data) <- c("blood", "heart", "brain")
+tissue_data <- as.matrix(tissue_data)
+
+barplot(tissue_data, beside=TRUE, legend.text=TRUE, ylim=c(0,100), col = c('cadetblue', 'darkred', 'grey65'), ylab = '% methylation',
+        args.legend = list(bty = 'n'))
+
+```
+
+## 2. load data
+
+The data for this workshop has been provided for you. There are 2 main data files:
+
+  1. annotation for the Illumina 450k methylation array
+  2. methylation data (beta values) for 5 whole blood and 5 buccal samples
+
+Load this into R:
+
+```{r, message=FALSE, warning=FALSE}
+library(minfi)
+# meth.anno <- readRDS('data/Ilmn450K_anno.RDS')
+betas <- readRDS('data/blood_buccal.RDS')
+```
+  
+## 3. set up samples/data and basic QC explore
+
+We'll create an object called `tissues` which provides identification of our blood and buccal samples:
+
+```{r, message=FALSE, warning=FALSE}
+# define samples
+tissues <- c(rep(0, 5), rep(1, 5))
+tissues <- as.factor(tissues)
+levels(tissues) <- c('Blood', 'Buccal')
+```
+
+Now we'll explore the distribution of methylation values (beta values) by creating a density plot. A methylation distribution for a given individual follows a bimodal distribution, with peaks around 0 (unmethylated) and 1 (methylated).
+
+Create a density plot for all samples, what do you see?
+
+```{r, message=FALSE, warning=FALSE, fig.align='center'}
+# create a density plot
+# densityPlot(betas, sampGroups = tissues)
+```
+
+  - Tree of tissues all CpGs
+
+Another way of exploring a data set is by cluster analysis.
+
+Here we perform hierarchical clustering on the 10 samples using all available data:
+
+```{r, message=FALSE, warning=FALSE, fig.align='center'}
+# Hierarchical Clustering
+d <- t(betas)
+rownames(d) <- tissues
+d <- dist(d, method = "minkowski", p = 2)
+hc <- hclust(d)
+plot(hc, main="Cluster on all probes", labels = tissues, xlab = '', sub="")
+```
+
+What do you conclude from the above?
+
+  - Tree of tissues with tissue biomarker CpGs
+
+Run `dmpFinder`:
+
+```{r, message=FALSE, warning=FALSE}
+# minfi dmpfinder
+results <- dmpFinder(betas, pheno = tissues, type = "categorical", qCutoff = 1)
+results <- na.omit(results)
+```
+
+Now extract these sites into an object called `top.results`:
+
+```{r, message=FALSE, warning=FALSE}
+top.results <- results[results$qval <= 0.00005,]
+```
+
+We previously performed clustering on all CpG sites, now we're going to cluster on those that pass our defined threshold.
+
+First extract a smaller matrix of all significant CpG sites:
+
+```{r, message=FALSE, warning=FALSE, tidy=TRUE}
+# subset the beta matrix by the top markers and cluster
+sig.betas <- betas[rownames(betas) %in% rownames(top.results),]
+```
+
+Now perform the clustering:
+
+```{r, message=FALSE, warning=FALSE, tidy=TRUE, fig.align='center'}
+# Hierarchical Clustering 
+d <- t(sig.betas)
+rownames(d) <- tissues
+d <- dist(d, method = "minkowski", p = 2)
+hc <- hclust(d)
+plot(hc, main="Cluster on selected top tissue discrimination CpG sites", labels = tissues, xlab = '', sub="")
+```
+
+What do you see?
+
+  - Perhaps here introduce the idea of blood cell types. So epigenetics – identify a “new”, previously unrecognised cell type or inflammatory response related to disease?
 
 ```{r}
 ## Read in the methylation data for 10 different cell populations
 blood_data <- read.csv('data/publicbeta_data.csv', head = T, row.names = 1, as.is = F)
+colnames(blood_data) <- gsub('\\.', '', colnames(blood_data))
 ```
 
+We'll now create another tree:
 
-  - Brief intro about CpGs and DNA methylation. One epigenetic mechanism for which there is a lot of data available is DNA methylation. You can think of this as an underline that occurs under two specific letters, in DNA language this is CG, but you could think of it as words with a “GN” next to each other e.g magnetic, gnat, gnome, significant. Remind them about context – different tissues etc.
+```{r, message=FALSE, warning=FALSE, tidy=TRUE, fig.align='center', fig.width=10}
+# Hierarchical Clustering 
+d <- t(blood_data)
+rownames(d) <- colnames(blood_data)
+d <- dist(d, method = "minkowski", p = 2)
+hc <- hclust(d)
+plot(hc, main="Cluster on selected top cell type discrimination CpG sites", labels = colnames(blood_data), xlab = '', sub="")
+```
 
-  - Is it worth creating a bar chart similar to the genotype one for a given CpG so they get a feel for it (100% methylated, 50% or 0%) in a given cell? We can rig it obviously.
+Another PCA:
 
-  - Tree of tissues all CpGs
+```{r, message=FALSE, warning=FALSE}
+library(FactoMineR)
+library(formatR)
 
-  - Tree of tissues with tissue biomarker CpGs
+blood_data2 <- data.frame(cells = as.factor(colnames(blood_data)), t(blood_data))
+# clean cell type groups
+blood_data2$cells <- gsub('_.*', '', blood_data2$cells)
+blood_data2$cells <- as.factor(blood_data2$cells)
 
-  - Perhaps here introduce the idea of blood cell types. So epigenetics – identify a “new”, previously unrecognised cell type or inflammatory response related to disease?
+cell_pca <- PCA(blood_data2, quali.sup = 1, graph = F)
 
-  - Sex?
+plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(1,2))
+plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(1,3))
+plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(2,3))
+plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(3,4))
+```
+
+Nice 3D view:
+
+```{r}
+
+p <- plot_ly(blood_data2, x = cell_pca$ind$coord[,1], y = cell_pca$ind$coord[,2], z = cell_pca$ind$coord[,3]) %>%
+  add_markers(sizes=c(10,100), opacity = 0.5, color = ~cells) %>%
+  layout(scene = list(xaxis = list(title = 'PC1'),
+                      yaxis = list(title = 'PC2'),
+                      zaxis = list(title = 'PC3')))
+
+p
+
+```
+
 
   - If time and can find an appropriate dataset show an analysis of environmental exposure, and/or strong disease phenotype
 
