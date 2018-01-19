@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 require(FactoMineR)
-library(printr)
+require(printr)
 ```
 
 -----------
@@ -155,9 +155,9 @@ We can plot the principal components and colour the points based on the populati
 
 ```{r, message=FALSE, results='hide'}
 # use flashpcaR package for fast PCA analysis
-library(flashpcaR)
+require(flashpcaR)
 # load scales for transparent points
-library(scales)
+require(scales)
 # perform PCA
 r <- flashpca(snpAnsCount, do_loadings=TRUE, verbose=TRUE, stand="binom", ndim=3)
 ```
@@ -188,7 +188,7 @@ With the `scatterplot3d` package, you can plot the first three principal compone
 scatterplots above).  This shows that the European (EUR), East Asian (EAS) and South Asian (SAS) super-populations are relatively homogeneous, while the Ad-Mixed American (AMR) and African (AFR) super-populations exhibit greater variation, suggesting admixture within these groups.
 
 ```{r, fig.width=10}
-library(scatterplot3d)
+require(scatterplot3d)
 scatterplot3d(r$vectors[,1], r$vectors[,2], r$vectors[,3], color=as.numeric(snpAns$Population), pch=16,
               cex.symbols=0.5, xlab="PC1", ylab="PC2", zlab="PC3")
 legend(-3.5, 2.5, legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16, bty = 'n')
@@ -198,7 +198,7 @@ legend(-3.5, 2.5, legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black'
 ### Interactive 3D plot
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
-library(plotly)
+require(plotly)
 
 p <- plot_ly(x = r$vectors[,1], y = r$vectors[,2], z = r$vectors[,3]) %>%
   add_markers(sizes=c(10,100), opacity = 0.5, color = snpAns$Population, size = r$vectors[,1]) %>%
@@ -265,7 +265,7 @@ The data for this workshop has been provided for you. There are 2 main data file
 Load this into R:
 
 ```{r, message=FALSE, warning=FALSE}
-library(minfi)
+require(minfi)
 # meth.anno <- readRDS('data/Ilmn450K_anno.RDS')
 betas <- readRDS('data/blood_buccal.RDS')
 ```
@@ -367,8 +367,7 @@ plot(hc, main="Cluster on selected top cell type discrimination CpG sites", labe
 Another PCA:
 
 ```{r, message=FALSE, warning=FALSE, fig.width=10}
-library(formatR)
-
+# 
 blood_data2 <- data.frame(cells = as.factor(colnames(blood_data)), t(blood_data))
 # clean cell type groups
 blood_data2$cells <- gsub('_.*', '', blood_data2$cells)

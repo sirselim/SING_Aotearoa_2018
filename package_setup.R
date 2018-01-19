@@ -5,7 +5,6 @@
 # install required packages from CRAN
 install.packages(printr)
 install.packages(scales)
-install.packages(formatR)
 install.packages(FactoMineR)
 install.packages(scatterplot3d)
 install.packages(plotly)

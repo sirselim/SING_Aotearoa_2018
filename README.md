@@ -40,7 +40,6 @@ This workshop requires a few specific R packages to be installed. The below cont
 # install required packages from CRAN
 install.packages(printr)
 install.packages(scales)
-install.packages(formatR)
 install.packages(FactoMineR)
 install.packages(scatterplot3d)
 install.packages(plotly)
