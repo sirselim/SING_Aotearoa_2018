@@ -9,13 +9,13 @@ There are two aspects of what you've learnt so far in the program that we will e
   - Populations Genetics
   - Epigenetics
   
-## 1. Population Genetics
+### 1. Population Genetics
 
 We will investigate genetic variation (SNPs) from several populations which have had individuals sequenced as part of the 1000 Genomes project.
 
-***Note:*** *The majority of code and data for this section is borrowed from the course GENE360 maintained by Associate Professor Mik Black. You can find the full resource here:* https://github.com/mikblack/GENE360-PopDiv
+***Note:*** *The majority of code and data for this section is borrowed/modified from the course **GENE360** maintained by [Associate Professor Mik Black](http://www.otago.ac.nz/genetics/staff/members/black.html). You can find the full resource here:* https://github.com/mikblack/GENE360-PopDiv
 
-## 2. Epigenetics
+### 2. Epigenetics
 
 We will explore some DNA methylation data and demonstrate how specific markers may allow the discrimination of both tissues and cells.
 

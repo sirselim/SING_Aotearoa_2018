@@ -61,6 +61,8 @@ As always please don't hesitate to ask your questions and prompt discussion!
 
 # 1. Population Genetics
 
+We will investigate genetic variation (SNPs) from several populations which have had individuals sequenced as part of the 1000 Genomes project.
+
 ***Note:*** *The majority of code and data for this section is borrowed/modified from the course **GENE360** maintained by [Associate Professor Mik Black](http://www.otago.ac.nz/genetics/staff/members/black.html). You can find the full resource here:* https://github.com/mikblack/GENE360-PopDiv
 
 ## Overview
@@ -256,6 +258,13 @@ The way in which the "leaves" of the tree cluster, reflects the similarity betwe
 -----------
 
 # 2. Epigenetics - CpGs and DNA methylation
+
+We will explore some DNA methylation data and demonstrate how specific markers may allow the discrimination of both tissues and cells.
+
+***Note:*** *This section borrows from previous epigenetic workshops, see below for the full resources:*
+
+  - GitHub repository: https://github.com/sirselim/methylation_EWAS_workshop  
+  - Full workshop: https://sirselim.github.io/methylation_EWAS_workshop/
 
 ## Overview
 
