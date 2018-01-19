@@ -2,7 +2,7 @@
 
 ## Bioinformatics – A Genetic and Epigenetic Taster
 
-Welcome to the bioinformatics 'taster' workshop for the SING Aotearoa 2018 program. This is aimed to be a basic introduction where we will interogate and analyse of a combination of genetic and epigenetic data sets, explore variation at both the single marker and multi-marker level and discuss what this means, how it is interpreted and what it may be used for.
+Welcome to the bioinformatics 'taster' workshop for the SING Aotearoa 2018 program. This is aimed to be a basic introduction where we will interrogate and analyse a combination of genetic and epigenetic data sets, explore variation at both the single marker and multi-marker level and discuss what this means, how it is interpreted and what it may be used for.
 
 There are two aspects of what you've learnt so far in the program that we will explore with some basic bioinformatic tools:
 
