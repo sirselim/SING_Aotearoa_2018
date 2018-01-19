@@ -1,6 +1,6 @@
 ---
 title: "SING Aotearoa Bioinformatics Workshop 2018"
-author: "Miles Benton"
+author: "Dr Miles Benton"
 date: 'Last updated: `r format(Sys.time(), "%d %B, %Y")`'
 output:
   prettydoc::html_pretty:
@@ -15,8 +15,32 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-require(FactoMineR)
+# source all required packages
+# install and load required packages from CRAN
+# install.packages(printr)
 require(printr)
+# install.packages(scales)
+require(scales)
+# install.packages(FactoMineR)
+require(FactoMineR)
+# install.packages(scatterplot3d)
+require(scatterplot3d)
+# install.packages(plotly)
+require(plotly)
+
+# install package from Github
+# need to first install devtools
+# install.packages(devtools)
+# then grab and install package from Github
+# devtools::install_github("gabraham/flashpca/flashpcaR")
+require(flashpcaR)
+
+# install Bioconductor (https://www.bioconductor.org/install/)
+# source("https://bioconductor.org/biocLite.R")
+# get basic packages and minfi
+# biocLite()
+# biocLite('minfi')
+require(minfi)
 ```
 
 -----------
@@ -155,9 +179,6 @@ We can plot the principal components and colour the points based on the populati
 
 ```{r, message=FALSE, results='hide'}
 # use flashpcaR package for fast PCA analysis
-require(flashpcaR)
-# load scales for transparent points
-require(scales)
 # perform PCA
 r <- flashpca(snpAnsCount, do_loadings=TRUE, verbose=TRUE, stand="binom", ndim=3)
 ```
@@ -188,7 +209,7 @@ With the `scatterplot3d` package, you can plot the first three principal compone
 scatterplots above).  This shows that the European (EUR), East Asian (EAS) and South Asian (SAS) super-populations are relatively homogeneous, while the Ad-Mixed American (AMR) and African (AFR) super-populations exhibit greater variation, suggesting admixture within these groups.
 
 ```{r, fig.width=10}
-require(scatterplot3d)
+# 
 scatterplot3d(r$vectors[,1], r$vectors[,2], r$vectors[,3], color=as.numeric(snpAns$Population), pch=16,
               cex.symbols=0.5, xlab="PC1", ylab="PC2", zlab="PC3")
 legend(-3.5, 2.5, legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16, bty = 'n')
@@ -198,8 +219,7 @@ legend(-3.5, 2.5, legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black'
 ### Interactive 3D plot
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
-require(plotly)
-
+# 
 p <- plot_ly(x = r$vectors[,1], y = r$vectors[,2], z = r$vectors[,3]) %>%
   add_markers(sizes=c(10,100), opacity = 0.5, color = snpAns$Population, size = r$vectors[,1]) %>%
   layout(scene = list(xaxis = list(title = 'PC1'),
@@ -265,8 +285,7 @@ The data for this workshop has been provided for you. There are 2 main data file
 Load this into R:
 
 ```{r, message=FALSE, warning=FALSE}
-require(minfi)
-# meth.anno <- readRDS('data/Ilmn450K_anno.RDS')
+# 
 betas <- readRDS('data/blood_buccal.RDS')
 ```
   
