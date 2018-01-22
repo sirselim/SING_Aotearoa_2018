@@ -96,7 +96,7 @@ The first data set we will look at contains genetic data on just a few loci (spe
 Open RStudio and read in the first data set using the following command:
 
 ```{r}
-## Read in the SNP data
+# Read in the SNP data
 snpData = read.table('data/GENE360snpData.txt',sep='\t',header=T)
 ```
 
@@ -107,24 +107,24 @@ There are nine columns in the data set that relate to specific single nucleotide
 We can use the "table" command to summarize the genotype information for each SNP:
 
 ```{r}
-## Make a genotype frequency table for the first SNP
+# Make a genotype frequency table for the first SNP
 table(snpData$rs3826656)
 ```
 
 We can also calculate the proportions associated with each genotype:
 
 ```{r}
-## Calculate proportions
+# Calculate proportions
 prop.table(table(snpData$rs3826656))
 ```
 
 and examine differences in genotype frequencies across populations:
 
 ```{r}
-## Create contingeny table - genotypes across populations
+# Create contingeny table - genotypes across populations
 table(snpData$Population, snpData$rs3826656)
 
-## And calculate proportions (rounded)
+# And calculate proportions (rounded)
 round(prop.table(table(snpData$Population, snpData$rs3826656),1),2)
 ```
 
@@ -142,9 +142,9 @@ These analyses can be repeated for different SNPs by changing the SNP ID (e.g., 
 The second data set that we will look at can be used to investigate population (genetic) diversity.  These SNPs were chosen because they are "ancestry informative" - variation in their genotype frequencies tends to be associated with differences between population groups.
 
 ```{r, cache=TRUE}
-## Load ancestry data
+# Load ancestry data
 snpAns = read.table('data/GENE360snpAncestry.txt', header=T, sep='\t')
-## Check dimensionality of data
+# Check dimensionality of data
 dim(snpAns)
 ```
 
@@ -157,17 +157,17 @@ To examine population diversity, we need to do two things:
 
 Step 1:
 ```{r}
-## Create object containing only the SNP data - remove the first three columns
+# Create object containing only the SNP data - remove the first three columns
 snpAnsDat = snpAns[,-c(1,2,3)]
 ```
 
 Step 2:
 ```{r, cache=TRUE}
-## Load a custom function to convert to allele counts
+# Load a custom function to convert to allele counts
 source('alleleCounts.R')
 
-## Apply the function to the genotype data, one column (SNP) at a time
-## This will take 30 seconds or so...
+# Apply the function to the genotype data, one column (SNP) at a time
+# This will take 30 seconds or so...
 snpAnsCount = apply(snpAnsDat, 2, alleleCounts)
 ```
 
@@ -196,18 +196,21 @@ r <- flashpca(snpAnsCount, do_loadings=TRUE, verbose=TRUE, stand="binom", ndim=3
 ### PCA plots
 
 ```{r, echo=FALSE, fig.width=10}
+# plot component 1 vs 2
 plot(r$vectors[,1], r$vectors[,2], col = alpha(as.numeric(snpAns$Population), 0.5), pch = 16, 
      main = "PCA of SNP data showing dim 1 vs dim 2")
 legend('bottomleft', legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16)
 ```
 
 ```{r, echo=FALSE, fig.width=10}
+# plot component 1 vs 3
 plot(r$vectors[,1], r$vectors[,3], col = alpha(as.numeric(snpAns$Population), 0.5), pch = 16, 
      main = "PCA of SNP data showing dim 1 vs dim 3")
 legend('topleft', legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16)
 ```
 
 ```{r, echo=FALSE, fig.width=10}
+# plot component 2 vs 3
 plot(r$vectors[,2], r$vectors[,3], col = alpha(as.numeric(snpAns$Population), 0.5), pch = 16, 
      main = "PCA of SNP data showing dim 2 vs dim 3")
 legend('topleft', legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16)
@@ -230,7 +233,7 @@ legend(-3.5, 2.5, legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black'
 We can take this a step further and using the `plotly` package we can visualise the three components in 3D space interactively - give it a spin!!
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
-# 
+# use plotly for interactive graph
 p <- plot_ly(x = r$vectors[,1], y = r$vectors[,2], z = r$vectors[,3]) %>%
   add_markers(sizes=c(10,100), opacity = 0.5, color = snpAns$Population, size = r$vectors[,1]) %>%
   layout(scene = list(xaxis = list(title = 'PC1'),
@@ -249,11 +252,11 @@ These tree diagrams group items together based on similarity scores.  In this se
 To calculate similarities, we need to create a set of "average" genotypes for each population.  One way to do this is to calculate the frequency of the major homozygote for each SNP in each population.
 
 ```{r, cache=TRUE}
-## Load custom function for calculating major homozygote frequency:
+# Load custom function for calculating major homozygote frequency:
 source('calcMajorFreq.R')
 
-## Apply this function to the SNP count data
-## Takes a few seconds
+# Apply this function to the SNP count data
+# Takes a few seconds
 popFreqs = calcMajorFreq(snpAnsCount, snpAns$Population)
 ```
 
@@ -311,7 +314,7 @@ The data for this workshop has been provided for you in the Github repository. T
 Load this into R:
 
 ```{r, message=FALSE, warning=FALSE}
-# 
+# load beta/methylation data for tissues
 betas <- readRDS('data/blood_buccal.RDS')
 ```
   
@@ -358,6 +361,7 @@ results <- na.omit(results)
 Now we extract these sites into an object called `top.results`, we do this based upon an association statistic - a value that tells us which sites are most robustly associated with tissue type.
 
 ```{r, message=FALSE, warning=FALSE}
+# filter results
 top.results <- results[results$qval <= 0.00005,]
 head(top.results)
 ```
@@ -365,6 +369,7 @@ head(top.results)
 Lets look at a few methylation sites that have the 'best' association rankings. We can easily visualise these using box plots:
 
 ```{r, fig.width=10, fig.height=6}
+# create boxplots for 4 results
 par(mfrow = c(2,2))
 boxplot(betas['cg26297005',]*100 ~ tissues, ylim = c(50,100), main = 'cg26297005', ylab = '% methylation')
 boxplot(betas['cg16780847',]*100 ~ tissues, ylim = c(50,100), main = 'cg16780847', ylab = '% methylation')
@@ -476,7 +481,7 @@ It is quite obvious that the CD19 population is the most 'different' based on th
 ... and again we can use `plotly` to create a nice interactive 3D view:
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE, fig.width=10}
-
+# use plotly for interactive graph to explore PCA results
 p <- plot_ly(blood_data2, x = cell_pca$ind$coord[,1], y = cell_pca$ind$coord[,2], z = cell_pca$ind$coord[,3]) %>%
   add_markers(sizes=c(10,100), opacity = 0.5, color = ~cells) %>%
   layout(scene = list(xaxis = list(title = 'PC1'),
@@ -484,7 +489,6 @@ p <- plot_ly(blood_data2, x = cell_pca$ind$coord[,1], y = cell_pca$ind$coord[,2]
                       zaxis = list(title = 'PC3')))
 
 p
-
 ```
 
 -----------
@@ -529,6 +533,7 @@ head(results)
 ## Plotting some disease associated methylation sites
 
 ```{r, fig.width=10, fig.height=7}
+# create boxplots of 4 CpG sites from results
 par(mfrow = c(2,2))
 boxplot(as.numeric(ms_data['cg25822783',])*100 ~ disease, col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg25822783', ylab = '% meth')
 boxplot(as.numeric(ms_data['cg23365293',])*100 ~ disease, col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg23365293', ylab = '% meth')
@@ -539,6 +544,7 @@ boxplot(as.numeric(ms_data['cg27343976',])*100 ~ disease, col = alpha(c('cadetbl
 **Tip:** don't be fooled by scale...
 
 ```{r, fig.width=10, fig.height=7}
+# create boxplots of 4 CpG sites from results
 par(mfrow = c(2,2))
 boxplot(as.numeric(ms_data['cg25822783',])*100 ~ disease, ylim = c(0,100),
         col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg25822783', ylab = '% meth')
