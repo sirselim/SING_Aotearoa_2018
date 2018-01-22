@@ -58,6 +58,8 @@ We're going to be expanding upon some of the topics that you've covered in genet
     + what does this look like? 
   - **Epigenetics** 
     + can we use epigenetics in a similar way as genetic variation to distinguish cells/tissues?
+    + what does a disease phenotype analysis look like?
+    + can we identify which tissue/cell an unidentified sample comes from using methylation profiles?
   
 As always please don't hesitate to ask your questions and prompt discussion!
 
