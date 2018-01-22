@@ -27,6 +27,8 @@ require(FactoMineR)
 require(scatterplot3d)
 # install.packages(plotly)
 require(plotly)
+# install.packages(knitr)
+require(knitr)
 
 # install package from Github
 # need to first install devtools
@@ -45,9 +47,11 @@ require(minfi)
 
 -----------
 
+# Bioinformatics – A Genetic and Epigenetic Taster
+
 This workshop aims to give you a taste of bioinformatics by utalising some basic tools and analyses to explore and interpret both genetic and epigenetic data.
 
-We're going to be exploring some of the topics that you've covered in genetics and epigenetics over the last couple of days. As such this workshop consists of two parts:
+We're going to be expanding upon some of the topics that you've covered in genetics and epigenetics over the last couple of days. As such this workshop consists of two parts:
 
   - **Population Genetics** 
     + how do we explore genetic variation between populations? 
@@ -96,9 +100,9 @@ snpData = read.table('data/GENE360snpData.txt',sep='\t',header=T)
 
 ## Looking at SNP frequencies
 
-The other nine columns in the data set relate to specific single nucleotide polymorphisms (SNPs) in the genome - we have the genotype data for each SNP for every individual in the data set.
+There are nine columns in the data set that relate to specific single nucleotide polymorphisms (SNPs) in the genome - we have the genotype data for each SNP for every individual in the data set.
 
-We can use the "table" command again to summarize the genotype information for each SNP:
+We can use the "table" command to summarize the genotype information for each SNP:
 
 ```{r}
 ## Make a genotype frequency table for the first SNP
@@ -179,6 +183,8 @@ The idea is to find the most important variation in the data, and examine the sa
 
 We can plot the principal components and colour the points based on the population each sample belongs to.
 
+Perform the PCA to create the first three components needed for plotting:
+
 ```{r, message=FALSE, results='hide'}
 # use flashpcaR package for fast PCA analysis
 # perform PCA
@@ -211,14 +217,15 @@ With the `scatterplot3d` package, you can plot the first three principal compone
 scatterplots above).  This shows that the European (EUR), East Asian (EAS) and South Asian (SAS) super-populations are relatively homogeneous, while the Ad-Mixed American (AMR) and African (AFR) super-populations exhibit greater variation, suggesting admixture within these groups.
 
 ```{r, fig.width=10}
-# 
-scatterplot3d(r$vectors[,1], r$vectors[,2], r$vectors[,3], color=as.numeric(snpAns$Population), pch=16,
+# 3D plotting of PCA results
+scatterplot3d(r$vectors[,1], r$vectors[,2], r$vectors[,3], color=alpha(as.numeric(snpAns$Population), 0.5), pch=16,
               cex.symbols=0.5, xlab="PC1", ylab="PC2", zlab="PC3")
 legend(-3.5, 2.5, legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black', 'green', 'cyan', 'red', 'blue'), pch = 16, bty = 'n')
 ```
 
-
 ### Interactive 3D plot
+
+We can take this a step further and using the `plotly` package we can visualise the three components in 3D space interactively - give it a spin!!
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
 # 
@@ -248,6 +255,8 @@ source('calcMajorFreq.R')
 popFreqs = calcMajorFreq(snpAnsCount, snpAns$Population)
 ```
 
+Plot the tree:
+
 ```{r, fig.width=10}
 # Make a cluster tree based on these frequencies
 plot(hclust(dist(popFreqs)),hang=-1)
@@ -268,10 +277,17 @@ We will explore some DNA methylation data and demonstrate how specific markers m
 
 ## Overview
 
-One epigenetic mechanism for which there is a lot of data available is DNA methylation. You can think of this as an underline that occurs under two specific letters, in DNA language this is **CG**, but you could think of it as words with a “**GN**” next to each other e.g ma<u>**gn**</u>etic, <u>**gn**</u>at, <u>**gn**</u>ome, si<u>**gn**</u>ificant. Remind them about context – different tissues etc.
+Depending on which genes are *"turned on and off"* the consequences can vary. This is particularly important in the context of differentiation between such things as tissues and cells, which have very different developmental origins and purposes, thus it fits that they will also differ on an epigenetic level - epigenetics is one of the major developmental drivers. It is important to remember that in this case the genetic code of the tissues and the cells of a given individual is identical, i.e. genetic variation isn't going to help distinguish the tissues/cells of an individual... So we're going to use epigenetics to see if we can determine what tissues we're dealing with here.
 
-  - Is it worth creating a bar chart similar to the genotype one for a given CpG so they get a feel for it (100% methylated, 50% or 0%) in a given cell? We can rig it obviously.
+### DNA Methylation
 
+One epigenetic mechanism for which there is a lot of data available is DNA methylation. You can think of this as an underline that occurs under two specific letters, in DNA language this is **CG**, but you could think of it as words with a “**GN**” next to each other e.g ma<u>**gn**</u>etic, <u>**gn**</u>at, <u>**gn**</u>ome, si<u>**gn**</u>ificant. 
+
+A very basic overview of a methylation mechanic:
+
+![CpG methylation illustration](images/CpG_methylation.png)
+
+So to visualise methylation at a particular CG between tissues we can create a bar chart similar to the genotype one we used earlier in the population genetics section. 
 
 ```{r, fig.width=10}
 # create some tissue methylation data
@@ -284,12 +300,11 @@ barplot(tissue_data, beside=TRUE, legend.text=TRUE, ylim=c(0,100), col = c('cade
 
 ```
 
-## 2. load data
+What can we infer about the CG sites and the tissues above?
 
-The data for this workshop has been provided for you. There are 2 main data files:
+## Load data
 
-  1. annotation for the Illumina 450k methylation array
-  2. methylation data (beta values) for 5 whole blood and 5 buccal samples
+The data for this workshop has been provided for you in the Github repository. The methylation data (beta values) for 5 whole blood and 5 buccal (cheek swab) samples is what we will be working with first.
 
 Load this into R:
 
@@ -298,9 +313,9 @@ Load this into R:
 betas <- readRDS('data/blood_buccal.RDS')
 ```
   
-## 3. set up samples/data and basic QC explore
+## Can we distinguish between tissues with methylation?
 
-We'll create an object called `tissues` which provides identification of our blood and buccal samples:
+To start with we'll create an object called `tissues` which provides identification of our blood and buccal samples:
 
 ```{r, message=FALSE, warning=FALSE}
 # define samples
@@ -309,18 +324,7 @@ tissues <- as.factor(tissues)
 levels(tissues) <- c('Blood', 'Buccal')
 ```
 
-Now we'll explore the distribution of methylation values (beta values) by creating a density plot. A methylation distribution for a given individual follows a bimodal distribution, with peaks around 0 (unmethylated) and 1 (methylated).
-
-Create a density plot for all samples, what do you see?
-
-```{r, message=FALSE, warning=FALSE, fig.align='center'}
-# create a density plot
-# densityPlot(betas, sampGroups = tissues)
-```
-
-  - Tree of tissues all CpGs
-
-Another way of exploring a data set is by cluster analysis.
+In a very similar manner as before with the population genetics module we're going to explore the variation of methylation values (beta values) by creating a tree. Again the distance between the 'leaves' in this tree indicates how closely related each sample is to the others, the further apart these leave the more variation that exists to distinguish one sample from another - or one tissue from another.
 
 Here we perform hierarchical clustering on the 10 samples using all available data:
 
@@ -335,9 +339,13 @@ plot(hc, main="Cluster on all probes", labels = tissues, xlab = '', sub="")
 
 What do you conclude from the above?
 
-  - Tree of tissues with tissue biomarker CpGs
+## Identification of the 'best' discriminatory markers
 
-Run `dmpFinder`:
+It is very obvious that we can separate the two tissues when looking at all available CpG sites. We should therefore be able to identify a panel of the most 'robust' markers with which to discriminate between the tissues - these are often referred to as biomarkers. We aim to find markers that clearly differ between the two tissues and we hope to build up a panel of all such markers. After this we'll see what happens when we use this panel to create another tree.
+
+First we'll perform a quick association analysis between our tissues and each of our methylation sites individually. This sounds like it might take quite a long time, but the beauty of `R` means that these types of analysis can be quickly batched together. We're going to use a function from the package `minfi` to test all 450K methylation markers (CpGs) and then look at some of the top sites (by association).
+
+First we run the association testing, run `dmpFinder`:
 
 ```{r, message=FALSE, warning=FALSE}
 # minfi dmpfinder
@@ -345,13 +353,28 @@ results <- dmpFinder(betas, pheno = tissues, type = "categorical", qCutoff = 1)
 results <- na.omit(results)
 ```
 
-Now extract these sites into an object called `top.results`:
+Now we extract these sites into an object called `top.results`, we do this based upon an association statistic - a value that tells us which sites are most robustly associated with tissue type.
 
 ```{r, message=FALSE, warning=FALSE}
 top.results <- results[results$qval <= 0.00005,]
+head(top.results)
 ```
 
-We previously performed clustering on all CpG sites, now we're going to cluster on those that pass our defined threshold.
+Lets look at a few methylation sites that have the 'best' association rankings. We can easily visualise these using box plots:
+
+```{r, fig.width=10, fig.height=6}
+par(mfrow = c(2,2))
+boxplot(betas['cg26297005',]*100 ~ tissues, ylim = c(50,100), main = 'cg26297005', ylab = '% methylation')
+boxplot(betas['cg16780847',]*100 ~ tissues, ylim = c(50,100), main = 'cg16780847', ylab = '% methylation')
+boxplot(betas['cg05350268',]*100 ~ tissues, ylim = c(0,60), main = 'cg05350268', ylab = '% methylation')
+boxplot(betas['cg07759042',]*100 ~ tissues, ylim = c(50,100), main = 'cg07759042', ylab = '% methylation')
+```
+
+What can we say about the above?
+
+### Revisting our tree using specific discriminatory markers
+
+We previously performed clustering on all CpG sites (that is nearly half a million markers!). This time we are going to cluster using only those markers that pass our defined threshold - those that best discriminate between the tissues.
 
 First extract a smaller matrix of all significant CpG sites:
 
@@ -371,17 +394,48 @@ hc <- hclust(d)
 plot(hc, main="Cluster on selected top tissue discrimination CpG sites", labels = tissues, xlab = '', sub="")
 ```
 
-What do you see?
+Above we have our new tree - what do you see? What can we conclude about our panel of markers?
 
-  - Perhaps here introduce the idea of blood cell types. So epigenetics – identify a “new”, previously unrecognised cell type or inflammatory response related to disease?
+## From tissues to cells
+
+Tissues are defined by a combination of specialised cells, making them heterogeneous by nature - this means that many different cell types make up a specific tissue, and these obviously differ between all the different tissues which make up an organism. Above when we looked at blood and buccal methylation profiles we were looking at the overall contribution of different cells to the 'global' methylation profile of that tissue. 
+
+If we consider blood, it is well established that all cells that contribute to blood as a tissue are derived from a single origin (stem cell) - thus a lineage of these cells can be constructed. 
+
+![blood cell lineage (*image sourced from [wikipedia](https://en.wikipedia.org/wiki/Blood_cell)*)](images/Hematopoiesis_simple.png)
+
+### DNA methylation in blood - potential to provide new insights in immune cell biology
+
+So with epigenetics (DNA methylation) we have the potential to identify a “new”, previously unrecognised cell type or inflammatory response related to disease by exploring these profiles. DNA methylation can be thought of as a unique 'barcode' for each cell type, distinguishing them from others.
+
+We can 'isolate' specific populations by cell-sorting - this could allow us to find additional CpG sites that help 'deconvolute'/identify some of the harder to identify sub-populations in cell-types, or previously unrecognised immune cell differences [changes in lineage] associated with disease. The differential methylation may indicate the emergence of a 'new' cell population (i.e. when looking at a given cell population (CD4+) and you see differences they might be due to increase/decrease/presence of a specific known/unknown sub-population of cells).
+
+Here is a quote from a recent article putting this in context:
+
+> *"Our results underline that DNA hypomethylation at cg19859270 site, observed in WBCs of smokers, did not arise by direct effect of tobacco smoking compounds on methylation of DNA **but rather by the enrichment of a tobacco-smoking-induced lymphocyte population in the peripheral blood**"*  
+> <font size="3">*Bauer M, et al. A varying T cell subtype explains apparent tobacco smoking induced single CpG hypomethylation in whole blood. Clinical Epigenetics 7 Springer Nature, 2015.*</font>
+
+What does this look like?
+
+```{r, echo=FALSE, fig.cap='Figure 4 from Bauer *et al.,* 2015.', fig.align='center'}
+include_graphics('images/Bauer_Fig4.jpg')
+```
+
+### Looking at cell-sorted data
+
+Now to get more hands on again! We're going to reconstruct the blood lineage illustrated above using real-world data. For this we are going to use some publicly available data for 10 different cell populations. This comes from the below paper:
+
+> *Reinius, L. E. et al. Differential DNA methylation in purified human blood cells: implications for cell lineage and studies on disease susceptibility. PLoS One 7, e41361 (2012).*
+
+Let's start by loading the Reinius data:
 
 ```{r}
-## Read in the methylation data for 10 different cell populations
+# read in the methylation data for 10 different cell populations
 blood_data <- read.csv('data/publicbeta_data.csv', head = T, row.names = 1, as.is = F)
 colnames(blood_data) <- gsub('\\.', '', colnames(blood_data))
 ```
 
-We'll now create another tree:
+Now we have the data we'll create another tree:
 
 ```{r, message=FALSE, warning=FALSE, tidy=TRUE, fig.align='center', fig.width=10}
 # Hierarchical Clustering 
@@ -392,24 +446,32 @@ hc <- hclust(d)
 plot(hc, main="Cluster on selected top cell type discrimination CpG sites", labels = colnames(blood_data), xlab = '', sub="")
 ```
 
-Another PCA:
+What do we see? What can we say about this tree? Is there anything 'odd' that you can see in this tree?
+
+Again we can look at this data in a different fashion by reducing the dimensionality - using PCA:
 
 ```{r, message=FALSE, warning=FALSE, fig.width=10}
-# 
+# create a data frame
 blood_data2 <- data.frame(cells = as.factor(colnames(blood_data)), t(blood_data))
 # clean cell type groups
 blood_data2$cells <- gsub('_.*', '', blood_data2$cells)
 blood_data2$cells <- as.factor(blood_data2$cells)
-
+# perfom the PCA
 cell_pca <- PCA(blood_data2, quali.sup = 1, graph = F)
-
+# create the plots
 plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(1,2))
 plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(1,3))
 plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(2,3))
 plot.PCA(cell_pca, habillage = 'cells', label = 'quali', axes = c(3,4))
 ```
 
-Nice 3D view:
+Which components clearly distinguish certain cell types?
+
+**Note:** ***look at component 4 and consider the cell lineage figure and tree plot we created - there is something really interesting and important to be discussed here...***
+
+It is quite obvious that the CD19 population is the most 'different' based on the selected methylation markers. What's nice is that there is a lot of biological evidence supporting this. 
+
+... and again we can use `plotly` to create a nice interactive 3D view:
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE, fig.width=10}
 
@@ -423,9 +485,112 @@ p
 
 ```
 
+-----------
 
-  - If time and can find an appropriate dataset show an analysis of environmental exposure, and/or strong disease phenotype
+# EXTRA (time permiting): Analysis of a disease phenotype
 
-  - Could we have an example/test run where say we set them a case study – Miles idea forensics – can they talk us through identifying a cell type at a crime scene
+Here is a quick worked example of looking for differential methylation in relation to disease status. In this case we're going to be using data previously published which explored methylation profiles between multiple sclerosis patients and healthy controls:
 
-  - Think of potential discussion points throughout.
+> *Graves M, **Benton MC**, Lea R, Boyle M, Tajouri L, **Macartney-Coxson D**, Scott R and Lechner-Scott J. (2013) Methylation differences at the HLA-DRB1 locus in CD4+ T-Cells are associated with multiple sclerosis. Multiple Sclerosis 20(8):1033-1041*
+
+## Load the data
+
+```{r}
+# load data (ms vs hc)
+ms_data <- readRDS('data/disease_data.RDS')
+# set variable with disease status
+disease <- colnames(ms_data)
+```
+
+## Can we 'cluster' by phenotype before analysis - another tree plot...
+
+```{r, message=FALSE, warning=FALSE, tidy=TRUE, fig.align='center', fig.width=10}
+# Hierarchical Clustering 
+d <- t(ms_data)
+rownames(d) <- colnames(disease)
+d <- dist(d, method = "minkowski", p = 2)
+hc <- hclust(d)
+plot(hc, main="Cluster on all CpG sites", labels = disease, xlab = '', sub="")
+```
+
+Hmmm... what do you think might be going on here?
+
+## Differential methylation analysis
+
+```{r, cache=TRUE}
+# minfi dmpfinder
+results <- dmpFinder(as.matrix(ms_data), pheno = disease, type = "categorical", qCutoff = 1)
+results <- na.omit(results)
+head(results)
+```
+
+## Plotting some disease associated methylation sites
+
+```{r, fig.width=10, fig.height=7}
+par(mfrow = c(2,2))
+boxplot(as.numeric(ms_data['cg25822783',])*100 ~ disease, col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg25822783', ylab = '% meth')
+boxplot(as.numeric(ms_data['cg23365293',])*100 ~ disease, col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg23365293', ylab = '% meth')
+boxplot(as.numeric(ms_data['cg24274665',])*100 ~ disease, col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg24274665', ylab = '% meth')
+boxplot(as.numeric(ms_data['cg27343976',])*100 ~ disease, col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg27343976', ylab = '% meth')
+```
+
+**Tip:** don't be fooled by scale...
+
+```{r, fig.width=10, fig.height=7}
+par(mfrow = c(2,2))
+boxplot(as.numeric(ms_data['cg25822783',])*100 ~ disease, ylim = c(0,100),
+        col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg25822783', ylab = '% meth')
+boxplot(as.numeric(ms_data['cg23365293',])*100 ~ disease, ylim = c(0,100),
+        col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg23365293', ylab = '% meth')
+boxplot(as.numeric(ms_data['cg24274665',])*100 ~ disease, ylim = c(0,100),
+        col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg24274665', ylab = '% meth')
+boxplot(as.numeric(ms_data['cg27343976',])*100 ~ disease, ylim = c(0,100),
+        col = alpha(c('cadetblue', 'darkred'), 0.5), main = 'cg27343976', ylab = '% meth')
+```
+
+These are the same plots with the y axis scaled between 0-100%, you have to be careful and keep an eye out for this sort of thing and ask yourself if the given association is 'real' or a potential 'artifact' in the data.
+
+## Let's try another tree now...
+
+We're going to take all CpG sites with an association p < 0.005:
+
+```{r}
+# get a list of cpgs passing set threshold
+cpgs <- rownames(results[results$pval < 0.005,])
+# filter the ms data for these sites
+data_filtered <- ms_data[rownames(ms_data) %in% cpgs,]
+```
+
+Now let's try that again:
+
+```{r, message=FALSE, warning=FALSE, tidy=TRUE, fig.align='center', fig.width=10}
+# Hierarchical Clustering 
+d <- t(data_filtered)
+rownames(d) <- colnames(disease)
+d <- dist(d, method = "canberra", p = 2)
+hc <- hclust(d)
+plot(hc, main="Cluster on selected top discriminatory CpG sites", labels = disease, xlab = '', sub="")
+```
+
+So we've found a set of markers that can clearly 'separate' disease phenotype in this group of samples.
+
+-----------
+
+# EXTRA (time permiting): Forensics – a case study
+
+Let's suspend belief for a minute and create a fictional scenario to apply some of what we've learnt today.
+
+You're a 'forensic bioinformatician' and have been handed a sample from a crime scene. You are requested to identify the tissue of origin of this sample. You have a 'database' of tissue methylation profiles on hand and your knowledge from above.
+
+Discuss how you think you would go about this (considering DNA methylation in this case).
+
+```{r, echo=FALSE, eval=FALSE}
+# load tissue data
+load('/data/PostDoc/tissue_typing/data/tissue_typing_betas.RData')
+```
+
+If you were asked to identify a specific individual in this case how would you go about it?
+
+-----------
+
+# Thank you

@@ -8,6 +8,7 @@ install.packages(scales)
 install.packages(FactoMineR)
 install.packages(scatterplot3d)
 install.packages(plotly)
+install.packages(knitr)
 
 # install package from Github
 # need to first install devtools

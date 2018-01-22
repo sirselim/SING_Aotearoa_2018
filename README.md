@@ -26,11 +26,14 @@ We will explore some DNA methylation data and demonstrate how specific markers m
   
 ## Getting started and following along
 
-This workshop requires you to have installed both R and RStudio, basic knowledge in either/both is nice but not essential. An RMarkdown document has been created and is part of this repository, you can either download the repository and open the `SING_workshop.Rmd` file in RStudio and follow along or feel free to work through the online version.
+This workshop requires you to have installed both R and RStudio, basic knowledge in either/both is nice but not essential. They can be obtained from here:
+
+  - R: https://cran.rstudio.com/
+  - RStudio: https://www.rstudio.com/product/rstudio/download/  
+
+An RMarkdown document has been created and is part of this repository, you can either download the repository and open the `SING_workshop.Rmd` file in RStudio and follow along or feel free to work through the online version.
 
 The online version of this workshop can be viewed here (**best viewed in Google Chrome**): https://rawgit.com/sirselim/SING_Aotearoa_2018/master/SING_workshop.html
-
-**Note:** if the above is too slow loading or doesn't work at all here is a link to the html document without the fancy interactive plots: https://rawgit.com/sirselim/SING_Aotearoa_2018/master/SING_workshop_no3d.html
 
 ### Required Packages
 
@@ -43,6 +46,7 @@ install.packages(scales)
 install.packages(FactoMineR)
 install.packages(scatterplot3d)
 install.packages(plotly)
+install.packages(knitr)
 
 # install package from Github
 # need to first install devtools
