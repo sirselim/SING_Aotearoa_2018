@@ -233,13 +233,25 @@ legend(-3.5, 2.5, legend = c('AFR', 'SAS', 'EAS', 'AMR', 'EUR'), col = c('black'
 We can take this a step further and using the `plotly` package we can visualise the three components in 3D space interactively - give it a spin!!
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
-# use plotly for interactive graph
-p <- plot_ly(x = r$vectors[,1], y = r$vectors[,2], z = r$vectors[,3]) %>%
-  add_markers(sizes=c(10,100), opacity = 0.5, color = snpAns$Population, size = r$vectors[,1]) %>%
-  layout(scene = list(xaxis = list(title = 'PC1'),
+# use plotly for interactive graph to explore PCA results
+# set margins
+m <- list(
+  l = 0,
+  r = 0,
+  b = 40,
+  t = 40,
+  pad = 1
+)
+# create plot
+p <- plot_ly(x = r$vectors[,1], y = r$vectors[,2], z = r$vectors[,3], width = 900, height = 500) %>%
+  add_markers(sizes=c(100,100), opacity = 0.5, color = snpAns$Population, size = r$vectors[,1]) %>%
+  layout(autosize = F, margin = m,
+         legend = list(x = 0.06, y = 0.04),
+         scene = list(xaxis = list(title = 'PC1'),
                       yaxis = list(title = 'PC2'),
                       zaxis = list(title = 'PC3')))
 
+# embed plot
 p
 ```
 
@@ -482,12 +494,24 @@ It is quite obvious that the CD19 population is the most 'different' based on th
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE, fig.width=10}
 # use plotly for interactive graph to explore PCA results
-p <- plot_ly(blood_data2, x = cell_pca$ind$coord[,1], y = cell_pca$ind$coord[,2], z = cell_pca$ind$coord[,3]) %>%
+# set margins
+m <- list(
+  l = 0,
+  r = 0,
+  b = 40,
+  t = 40,
+  pad = 1
+)
+# create plot
+p <- plot_ly(blood_data2, x = cell_pca$ind$coord[,1], y = cell_pca$ind$coord[,2], z = cell_pca$ind$coord[,3], width = 900, height = 550) %>%
   add_markers(sizes=c(10,100), opacity = 0.5, color = ~cells) %>%
-  layout(scene = list(xaxis = list(title = 'PC1'),
+  layout(autosize = F, margin = m,
+         legend = list(x = 0.06, y = 0.04),
+         scene = list(xaxis = list(title = 'PC1'),
                       yaxis = list(title = 'PC2'),
                       zaxis = list(title = 'PC3')))
 
+# embed plot
 p
 ```
 
