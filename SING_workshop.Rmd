@@ -29,6 +29,8 @@ require(scatterplot3d)
 require(plotly)
 # install.packages(knitr)
 require(knitr)
+# install.packages(prettydoc)
+require(prettydoc)
 
 # install package from Github
 # need to first install devtools

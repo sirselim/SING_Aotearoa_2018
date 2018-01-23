@@ -47,6 +47,7 @@ install.packages(FactoMineR)
 install.packages(scatterplot3d)
 install.packages(plotly)
 install.packages(knitr)
+install.packages(prettydoc)
 
 # install package from Github
 # need to first install devtools
