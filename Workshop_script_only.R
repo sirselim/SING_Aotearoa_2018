@@ -55,6 +55,9 @@ round(prop.table(table(snpData$Population, snpData$rs3826656),1),2)
 snpFreqs = t(prop.table(table(snpData$Population, snpData$rs3826656), 1))
 barplot(snpFreqs, beside=TRUE, legend.text=TRUE, ylim=c(0,1))
 
+snpFreqs = t(prop.table(table(snpData$Population, snpData$), 1))
+barplot(snpFreqs, beside=TRUE, legend.text=TRUE, ylim=c(0,1))
+
 
 # Load ancestry data
 snpAns = read.table('data/GENE360snpAncestry.txt', header=T, sep='\t')
@@ -115,7 +118,7 @@ m <- list(
 # create plot
 p <- plot_ly(x = r$vectors[,1], y = r$vectors[,2], z = r$vectors[,3], width = 900, height = 500) %>%
   add_markers(sizes=c(100,100), opacity = 0.5, color = snpAns$Population, size = r$vectors[,1]) %>%
-  layout(autosize = F, margin = m,
+  layout(autosize = F, margin = m,8e50cc0e2140a3495bcb4eecb5907b3bc5ae36e6
          legend = list(x = 0.06, y = 0.04),
          scene = list(xaxis = list(title = 'PC1'),
                       yaxis = list(title = 'PC2'),
