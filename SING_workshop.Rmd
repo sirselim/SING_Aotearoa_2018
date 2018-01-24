@@ -166,7 +166,71 @@ snpAnsDat = snpAns[,-c(1,2,3)]
 Step 2:
 ```{r, cache=TRUE}
 # Load a custom function to convert to allele counts
-source('alleleCounts.R')
+source('alleleCounts.R')---
+title: "SING Aotearoa Bioinformatics Workshop 2018"
+author: "Dr Miles Benton"
+date: 'Last updated: `r format(Sys.time(), "%d %B, %Y")`'
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# source all required packages
+# install and load required packages from CRAN
+# install.packages(printr)
+require(printr)
+# install.packages(scales)
+require(scales)
+# install.packages(FactoMineR)
+require(FactoMineR)
+# install.packages(scatterplot3d)
+require(scatterplot3d)
+# install.packages(plotly)
+require(plotly)
+# install.packages(knitr)
+require(knitr)
+# install.packages(prettydoc)
+require(prettydoc)---
+title: "SING Aotearoa Bioinformatics Workshop 2018"
+author: "Dr Miles Benton"
+date: 'Last updated: `r format(Sys.time(), "%d %B, %Y")`'
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# source all required packages
+# install and load required packages from CRAN
+# install.packages(printr)
+require(printr)
+# install.packages(scales)
+require(scales)
+# install.packages(FactoMineR)
+require(FactoMineR)
+# install.packages(scatterplot3d)
+require(scatterplot3d)
+# install.packages(plotly)
+require(plotly)
+# install.packages(knitr)
+require(knitr)
+# install.packages(prettydoc)
+require(prettydoc)
 
 # Apply the function to the genotype data, one column (SNP) at a time
 # This will take 30 seconds or so...
