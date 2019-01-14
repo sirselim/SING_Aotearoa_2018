@@ -33,7 +33,7 @@ This workshop requires you to have installed both R and RStudio, basic knowledge
 
 An RMarkdown document has been created and is part of this repository, you can either download the repository and open the `SING_workshop.Rmd` file in RStudio and follow along or feel free to work through the online version.
 
-The online version of this workshop can be viewed here (**best viewed in Google Chrome**): https://rawgit.com/sirselim/SING_Aotearoa_2018/master/SING_workshop.html
+The online version of this workshop can be viewed here (**best viewed in Google Chrome**): https://htmlpreview.github.io/?https://github.com/sirselim/SING_Aotearoa_2018/blob/master/SING_workshop.html
 
 ### Required Packages
 
